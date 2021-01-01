@@ -1,19 +1,25 @@
 # opcr
 Process and Plot Data from an Optical Plankton Counter (OPC)
 
-## Package setup
+## Installation
 
-If in doubt, look [here](https://r-pkgs.org/index.html).
+You can install the latest version of opcr from github:
+``` r
+library(devtools)
+install_github('hansenjohnson/opcr')
+library(opcr)
+```
 
-### Basic steps
+## Example
 
-1. Write code and save in `/R`
-2. Write documentation using Roxygen syntax, then update with `document()`
-3. Load the package using `load_all()` and test
-4. Publish to github
+Here's a quick example of how to process and plot OPC data. See the `intro` vignette for more details.
 
-### Tips and tricks
+``` r
+library(opcr)
 
-- Explicitly specify all imported functions in source code
-- Click within a function then use the keyboard shortcut `command+option+shift+R` to generate a Roxygen skeleton
-- DO NOT edit `NAMESPACE` or `man/` manually
+# process opc data file (requires raw data file)
+opc = opc_process('data/raw/OPC001.D00')
+
+# plot abundance histogram
+opc_plot_histogram(opc)
+```

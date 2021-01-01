@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "hansen.johnson@dal.ca")
 Description: The Optical Plankton Counter (OPC) is an old but trusted piece of oceanographic equipment for measuring the abundance of small particles in the ocean. This package provides basic utilities to read, process, and plot OPC data.
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

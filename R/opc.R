@@ -1,5 +1,11 @@
-## opc ##
-# functions for processing / plotting OPC data
+#' opcr
+#'
+#' A simple package for processing and plotting
+#' Optical Plankton Counter (OPC) data
+#'
+#' @docType package
+#' @name opcr
+NULL
 
 # data --------------------------------------------------------------------
 
