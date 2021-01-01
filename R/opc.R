@@ -316,7 +316,7 @@ opc_flag = function(df){
   # flag extreme depth values
   df$flag[df$depth > 1e30] = 'depth'
 
-  # apply median dplyr::filter to flag depth spikes
+  # apply median filter to flag depth spikes
   mf = stats::runmed(df$depth, k = 11)
   df$flag[which(abs(mf-df$depth)>3)] = 'depth'
 
