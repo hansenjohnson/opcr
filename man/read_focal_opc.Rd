@@ -4,12 +4,21 @@
 \alias{read_focal_opc}
 \title{Read OPC raw data file}
 \usage{
-read_focal_opc(ifile, nheader = 27)
+read_focal_opc(
+  ifile,
+  nheader = 27,
+  tformat = "WHOI \%m/\%d/\%y \%H:\%M:\%S \\n\\n\\r",
+  tz = "UTC"
+)
 }
 \arguments{
 \item{ifile}{path to .D00 file}
 
 \item{nheader}{number of bits in header (default = 27)}
+
+\item{tformat}{strptime format used to extract timestamp from header}
+
+\item{tz}{timezone}
 }
 \value{
 list containing \code{start_time} of the data file and vectors of the \code{id} flags and

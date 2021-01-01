@@ -41,6 +41,8 @@ NULL
 #'
 #' @param ifile path to .D00 file
 #' @param nheader number of bits in header (default = 27)
+#' @param tformat strptime format used to extract timestamp from header
+#' @param tz timezone
 #'
 #' @return list containing `start_time` of the data file and vectors of the `id` flags and
 #' corresponding `data` values
@@ -48,7 +50,7 @@ NULL
 #' @export
 #'
 #' @examples
-read_focal_opc = function(ifile, nheader = 27){
+read_focal_opc = function(ifile, nheader = 27, tformat = 'WHOI %m/%d/%y %H:%M:%S \n\n\r', tz = 'UTC'){
 
   # determine file size
   fs = file.info(ifile)$size
@@ -102,7 +104,7 @@ read_focal_opc = function(ifile, nheader = 27){
 
   # convert header to timestamp
   txt = readBin(header, what = 'character')
-  start_time = as.POSIXct(substr(txt,6,22),format='%m/%d/%y %H:%M:%S',tz='UTC')
+  start_time = as.POSIXct(txt, format=tformat, tz=tz)
 
   # return data
   return(
