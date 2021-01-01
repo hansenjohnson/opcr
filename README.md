@@ -15,5 +15,5 @@ devtools::install_github('hansenjohnson/opcr', build_vignettes = TRUE)
 library(opcr)
 
 # check out the vignette for simple examples
-vignette('intro', package='opcr')
+vignette('opcr')
 ```
