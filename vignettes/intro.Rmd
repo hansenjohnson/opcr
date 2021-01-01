@@ -27,14 +27,12 @@ library(opcr)
 
 Reading and processing the data is all done using `opc_process()`. This does the following steps:  
 
-1. read in binary OPC data in .D00 file with `read_focal_opc()`
-2. convert to a nice tabular format with `convert_single_opc()`
-- see `opc` data documentation for details
-3. apply various quality control flags with `opc_flag()`
-- see `opc_flag()` documentation for a description of each flag
-4. use a shiny app to interactively select the downcast with `opc_trim()`
+1. read in binary OPC data in .D00 file with `read_focal_opc()`  
+2. convert to a nice tabular format with `convert_single_opc()`  
+3. apply various quality control flags with `opc_flag()`  
+4. use a shiny app to interactively select the downcast with `opc_trim()`  
 
-Here's a simple example of how to process the raw OPC data in `OPC027.D00` and store the output in opc tibble called `df`. Note that this requires the user to interactively select the downcast so does not actually run in this vignette.
+Here's a simple example of how to process the raw OPC data. Note that this requires the user to interactively select the downcast so does not actually run in this vignette.
 ```{r process, eval = FALSE}
 opc = opc_process(ifile = 'data/raw/OPC027.D00')
 ```
