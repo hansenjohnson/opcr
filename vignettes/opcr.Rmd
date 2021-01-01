@@ -34,19 +34,20 @@ Reading and processing the data is all done using `opc_process()`. This does the
 
 Here's a simple example of how to process the raw OPC data. Note that this requires the user to interactively select the downcast so does not actually run in this vignette.
 ```{r process, eval = FALSE}
-opc = opc_process(ifile = 'data/raw/OPC027.D00')
+opc = opc_process(ifile = 'data/raw/OPC033.D00')
 ```
 
 ### OPC data format
 
 The processed data is stored in what I refer to as an `opc tibble` with the following fields:  
 
-`scan` - the scan number, which iteratively increases with each data record  
-`timer` - the timer, which recorded seconds since the unit was powered on  
+`scan` - the scan number, which increases with each data record  
+`timer` - the timer count, which is sent every 0.5 seconds since the unit was powered on and resets after 4095 values  
 `atten` - light attenuation  
 `depth` - instrument depth in meters  
 `flag` - quality control flag, with zero meaning good. See `opc_flag()` for the other definitions  
-`time` - the datetime since deployment, in UTC  
+`secs` - the number of seconds elapsed since the instrument was powered on  
+`time` - the datetime since the unit was powered on  
 `volume_filtered` - the volume of water that has passed through the OPC since the previous record, in cubic meters  
 `esd` - a nested list of the particle sizes, in Equivalent Spherical Diameter (ESD; mm) detected during this data record  
 
@@ -75,7 +76,7 @@ opc_abundance(opc)
 
 ### Biomass profile
 
-This uses the equation from Suthers et al 2006 to covert size to biomass.
+This uses the equation from Suthers et al (2006) to covert size to biomass.
 
 ```{r}
 opc_biomass(opc)

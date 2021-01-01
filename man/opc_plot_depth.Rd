@@ -2,7 +2,7 @@
 % Please edit documentation in R/opc.R
 \name{opc_plot_depth}
 \alias{opc_plot_depth}
-\title{Plot OPC scan versus depth series}
+\title{Plot OPC time versus depth series}
 \usage{
 opc_plot_depth(df, good_only = T)
 }
@@ -15,5 +15,5 @@ opc_plot_depth(df, good_only = T)
 ggplot
 }
 \description{
-Plot OPC scan versus depth series
+Plot OPC time versus depth series
 }
