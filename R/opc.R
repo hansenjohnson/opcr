@@ -405,7 +405,7 @@ opc_trim = function(df){
 
     # plot diagnostics
     output$diagnostics <- renderPlot({
-      if(nrow(dplyr::filter(dfs(),flag==0))>10){
+      if(nrow(dplyr::filter(dfs(),flag==0))>50){
         opc_plot_diagnostics(df = dfs(), good_only = TRUE)
       } else {
         showNotification("Few unflagged observations detected. Plotting all data instead...", type = 'warning')
