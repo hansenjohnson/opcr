@@ -1,8 +1,8 @@
 ---
-title: "Introduction to `opcr`"
+title: "Introduction to opcr"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{intro}
+  %\VignetteIndexEntry{Introduction to opcr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
