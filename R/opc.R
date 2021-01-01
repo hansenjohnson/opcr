@@ -598,6 +598,60 @@ relabel = function(x){
 
 # calculate ---------------------------------------------------------------
 
+#' Calculate OPC speed
+#'
+#' Use one of 3 methods (`instantaneous`, `range`, or `lm`) to calculate the
+#' descent rate of an OPC in meters per second.
+#'
+#' `instantaneous` - compute speed at each sampling point and return average
+#' `range` - simple divide the time difference by the depth difference
+#' `lm` - fit a simple linear model and return the slope parameter
+#'
+#' @param df opc tibble
+#' @param method choose one from `instantaneous`, `range`, or `lm`
+#' @param exclude_bad_depths logical, where `TRUE` removes bad depth flags
+#'
+#' @return numeric speed in meters per second (positive down)
+#' @export
+#'
+#' @examples
+opc_speed = function(df, method = 'instantaneous', exclude_bad_depths = TRUE){
+
+  if(exclude_bad_depths){
+    df = dplyr::filter(df, flag != 'depth')
+  }
+
+  t = as.numeric(df$time)
+  z = as.numeric(df$depth)
+
+  if(method == 'instantaneous'){
+    # average instantaneous speed
+
+    time_diff = diff(t)
+    depth_diff = diff(z)
+    spd = mean(depth_diff / time_diff, na.rm = T)
+
+  } else if(method == 'range'){
+    # speed based on depth and time range
+
+    time_diff = max(t,na.rm = T) - min(t, na.rm = T)
+    depth_diff = max(z,na.rm = T) - min(z, na.rm = T)
+    spd = depth_diff / time_diff
+
+  } else if(method == 'lm'){
+    # speed based on linear model
+
+    m = lm(d~t)
+    spd = as.numeric(m$coefficients[2])
+
+  } else {
+    warning('Unknown method! Please set method to `instantaneous`, `range`, or `lm`')
+    spd = NA
+  }
+
+  return(spd)
+}
+
 #' Calculate OPC abundance profile
 #'
 #' @param df opc tibble
