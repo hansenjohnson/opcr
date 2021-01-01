@@ -342,14 +342,22 @@ opc_trim = function(df){
   ui = fluidPage(
     fluidRow(
       column(width = 12,
-             helpText('Click `Plot` to plot OPC data in the selected region. Click `Done` to trim and save the output', align = "center"),
+             helpText('Click and drag to select a region. Double click inside a selected region to zoom in, or outside to reset the plot limits.', align = "center"),
              plotOutput("full", height = 400, dblclick = "plot_dblclick",
-                        brush = brushOpts(id = "plot_brush", direction = "x",resetOnNew = TRUE))
+                        brush = brushOpts(id = "plot_brush", direction = "x",resetOnNew = TRUE)
+                        )
       )
     ),
     fluidRow(
-      column(width = 3, actionButton("plot", label = 'Plot',width = '100%'), offset = 3),
-      column(width = 3, actionButton("done", label = 'Done',width = '100%'))
+      column(width = 12,
+             helpText('Click `Plot` to plot OPC data in the selected region. Click `Done` to trim and save the output', align = "center")
+             ),
+      column(width = 3, offset = 3,
+             actionButton("plot", label = 'Plot',width = '100%')
+             ),
+      column(width = 3,
+             actionButton("done", label = 'Done',width = '100%')
+             )
     ),
     fluidRow(
       column(width = 12,plotOutput("diagnostics", height = 600)
@@ -400,7 +408,7 @@ opc_trim = function(df){
       if(nrow(dplyr::filter(dfs(),flag==0))>10){
         good_only = TRUE
       } else {
-        message('Few unflagged observations detected. Plotting all data instead...')
+        showNotification("Few unflagged observations detected. Plotting all data instead...", type = 'warning')
         good_only = FALSE
       }
       opc_plot_diagnostics(df = dfs(), good_only = good_only)
