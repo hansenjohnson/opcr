@@ -249,7 +249,8 @@ convert_single_opc = function(ifile){
   # fix timer (resets at 4095) and convert to real time
   t = c(1,diff(rec$timer))
   t[t==-4095] = 1
-  rec$time = start_time+cumsum(t)
+  rec$secs = cumsum(t)/2
+  rec$time = start_time+rec$secs
 
   # calculate volume filtered
   rec$volume_filtered = abs(c(diff(rec$depth),0))*area
@@ -294,14 +295,14 @@ opc_flag = function(df){
 
   # calculate time, depth, and attenuation difference
   depth_diff = c(NA,diff(df$depth))
-  time_diff = c(NA,diff(df$timer))
+  time_diff = c(NA,diff(df$secs))
   atten_diff = c(NA,diff(df$atten))
 
   # calculate instantaneous speed
   speed = depth_diff / time_diff
 
-  # flag non-sequential timer values
-  df$flag[time_diff != 1] = 'timer'
+  # flag non-sequential time values
+  df$flag[time_diff != 0.5] = 'timer'
 
   # flag slow descent speeds
   df$flag[speed < 0.3] = 'slow'
@@ -383,12 +384,12 @@ opc_trim = function(df){
 
     # plot full time-depth series
     output$full <- renderPlot({
-      ggplot(df[df$flag!='depth',],aes(x=scan,y=depth))+
+      ggplot(df[df$flag!='depth',],aes(x=secs,y=depth))+
         geom_path()+
         geom_point(shape = 1)+
         scale_y_reverse()+
         coord_cartesian(xlim = ranges$x,expand = FALSE)+
-        labs(x = 'Scan', y = 'Depth (m)')+
+        labs(x = 'Time (s)', y = 'Depth (m)')+
         theme_bw()
     })
 
@@ -396,7 +397,7 @@ opc_trim = function(df){
     dfs = eventReactive(input$plot,{
       brush = input$plot_brush
       if (!is.null(brush)) {
-        df %>% dplyr::filter(scan >= brush$xmin & scan <= brush$xmax)
+        df %>% dplyr::filter(secs >= brush$xmin & secs <= brush$xmax)
       }else{
         showNotification("Plotting all data. Select a region to trim the data!", type = 'warning')
         df
@@ -872,7 +873,7 @@ opc_image = function(df, ds=0.05, dz=2, min_size = 1, max_size = 4, good_only = 
 
 # plot --------------------------------------------------------------------
 
-#' Plot OPC scan versus depth series
+#' Plot OPC time versus depth series
 #'
 #' @param df opc tibble
 #' @param good_only use only good (unflagged) values
@@ -885,11 +886,11 @@ opc_plot_depth = function(df, good_only=T){
 
   if(good_only){df = dplyr::filter(df,flag==0)}
 
-  ggplot(df,aes(x=scan,y=depth))+
+  ggplot(df,aes(x=secs,y=depth))+
     geom_path()+
     geom_point(shape=1)+
     scale_y_reverse(limits = c(NA,0))+
-    labs(x='Scan',y='Depth (m)')+
+    labs(x='Time (s)',y='Depth (m)')+
     theme_bw()
 }
 
@@ -906,14 +907,14 @@ opc_plot_flags = function(df){
   bad = dplyr::filter(df,flag!=0)
   txt = paste0(round(nrow(bad)/nrow(df)*100), '% points flagged (',nrow(bad),'/',nrow(df),')')
   ggplot()+
-    geom_segment(data=bad,aes(x=scan+30,xend=scan+10,y=depth,yend=depth,color=flag),
+    geom_segment(data=bad,aes(x=secs+25,xend=secs+10,y=depth,yend=depth,color=flag),
                  alpha=0.7, arrow = arrow(length = unit(4,'points')))+
-    geom_path(data=good,aes(x=scan,y=depth),alpha=0.7)+
-    geom_point(data=good,aes(x=scan,y=depth),shape=1,alpha=0.7)+
+    geom_path(data=good,aes(x=secs,y=depth),alpha=0.7)+
+    geom_point(data=good,aes(x=secs,y=depth),shape=1,alpha=0.7)+
     scale_color_manual(
       values=c('slow'='red','reversal'='blue','depth'='black','attenuance'='purple','timer'='orange'))+
     scale_y_reverse(limits = c(NA,0))+
-    labs(x='Scan',y='Depth (m)', color = 'Flag',caption = txt)+
+    labs(x='Time (s)',y='Depth (m)', color = 'Flag',caption = txt)+
     theme_bw()+
     theme(legend.position = c(1,1),
           legend.justification = c(1,1),
