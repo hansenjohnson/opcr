@@ -2,7 +2,7 @@
 title: "Introduction to `opcr`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{opcr_intro}
+  %\VignetteIndexEntry{intro}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
