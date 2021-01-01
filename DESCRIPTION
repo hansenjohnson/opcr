@@ -1,0 +1,26 @@
+Package: opcr
+Title: Process and Plot Data from an Optical Plankton Counter (OPC)
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Hansen",
+           family = "Johnson",
+           role = c("aut", "cre"),
+           email = "hansen.johnson@dal.ca")
+Description: The Optical Plankton Counter (OPC) is an old but trusted piece of oceanographic equipment for measuring the abundance of small particles in the ocean. This package provides basic utilities to read, process, and plot OPC data.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
+Depends: 
+    ggplot2,
+    tidyr,
+    dplyr,
+    shiny,
+    patchwork
+Imports:
+    stats
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

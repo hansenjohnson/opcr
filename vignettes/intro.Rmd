@@ -1,0 +1,148 @@
+---
+title: "Introduction to `opcr`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{opcr_intro}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = 'center',
+  fig.width = 6, 
+  fig.height = 4
+)
+```
+
+```{r setup}
+library(opcr)
+```
+
+## Process
+
+### Reading raw data
+
+Reading and processing the data is all done using `opc_process()`. This does the following steps:  
+
+1. read in binary OPC data in .D00 file with `read_focal_opc()`
+2. convert to a nice tabular format with `convert_single_opc()`
+- see `opc` data documentation for details
+3. apply various quality control flags with `opc_flag()`
+- see `opc_flag()` documentation for a description of each flag
+4. use a shiny app to interactively select the downcast with `opc_trim()`
+
+Here's a simple example of how to process the raw OPC data in `OPC027.D00` and store the output in opc tibble called `df`. Note that this requires the user to interactively select the downcast so does not actually run in this vignette.
+```{r process, eval = FALSE}
+opc = opc_process(ifile = 'data/raw/OPC027.D00')
+```
+
+### OPC data format
+
+The processed data is stored in what I refer to as an `opc tibble` with the following fields:  
+
+`scan` - the scan number, which iteratively increases with each data record  
+`timer` - the timer, which recorded seconds since the unit was powered on  
+`atten` - light attenuation  
+`depth` - instrument depth in meters  
+`flag` - quality control flag, with zero meaning good. See `opc_flag()` for the other definitions  
+`time` - the datetime since deployment, in UTC  
+`volume_filtered` - the volume of water that has passed through the OPC since the previous record, in cubic meters  
+`esd` - a nested list of the particle sizes, in Equivalent Spherical Diameter (ESD; mm) detected during this data record  
+
+Here's an example:  
+```{r}
+opc
+```
+
+Data in this format is the cornerstone of this package; all computation and plotting requires this `opc tibble` as input.
+
+## Calculate
+
+Several functions make it convenient to calculate common OPC data products.
+
+### Size-frequency histogram
+
+```{r}
+opc_histogram(opc)
+```
+
+### Abundance profile
+
+```{r}
+opc_abundance(opc)
+```
+
+### Biomass profile
+
+This uses the equation from Suthers et al 2006 to covert size to biomass.
+
+```{r}
+opc_biomass(opc)
+```
+
+### Abundance in size and depth matrix
+
+```{r}
+opc_image(opc)
+```
+
+## Plot
+
+Here are some quick plots. These take an `opc tibble` as input, derive the relevant variables using the functions above, then return a nice ggplot. Check the function documentation for more information.
+
+### Simple downcast
+
+```{r}
+opc_plot_depth(opc)
+```
+
+### Flags
+
+```{r}
+opc_plot_flags(opc)
+```
+
+### Attenuation
+
+```{r}
+opc_plot_attenuance(opc)
+```
+
+### Histogram
+
+```{r}
+opc_plot_histogram(opc)
+```
+
+### Abundance
+
+```{r}
+opc_plot_abundance(opc)
+```
+
+### Biomass
+
+```{r}
+opc_plot_biomass(opc)
+```
+
+### Image
+
+```{r, fig.width=6,fig.height=6}
+opc_plot_image(opc)
+```
+
+### Multipanel
+
+```{r,fig.width=6,fig.height=6}
+opc_plot_multipanel(opc)
+```
+
+### Diagnostics
+
+```{r,fig.width=8,fig.height=6}
+opc_plot_diagnostics(opc)
+```
