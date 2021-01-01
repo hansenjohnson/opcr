@@ -251,7 +251,7 @@ convert_single_opc = function(ifile){
   t[t==-4095] = 1
   rec$time = start_time+cumsum(t)
 
-  # calculate volume dplyr::filtered
+  # calculate volume filtered
   rec$volume_filtered = abs(c(diff(rec$depth),0))*area
 
   # add esd to rec as nested list
@@ -397,7 +397,13 @@ opc_trim = function(df){
 
     # plot diagnostics
     output$diagnostics <- renderPlot({
-      opc_plot_diagnostics(df = dfs())
+      if(nrow(dplyr::filter(dfs(),flag==0))>10){
+        good_only = TRUE
+      } else {
+        message('Few unflagged observations detected. Plotting all data instead...')
+        good_only = FALSE
+      }
+      opc_plot_diagnostics(df = dfs(), good_only = good_only)
     })
 
     # return trimmed output
@@ -458,7 +464,7 @@ opc_process = function(ifile){
 #' @export
 #'
 #' @examples
-opc_process_cruise = function(cruise,data_dir,output_dir,overwrite=FALSE){
+opc_process_cruise = function(cruise,data_dir,output_dir=data_dir,overwrite=FALSE){
 
   # create output dir
   if(!dir.exists(output_dir)){dir.create(output_dir, recursive = T)}

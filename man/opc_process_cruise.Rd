@@ -4,7 +4,7 @@
 \alias{opc_process_cruise}
 \title{Process multiple OPC casts}
 \usage{
-opc_process_cruise(cruise, data_dir, output_dir, overwrite = FALSE)
+opc_process_cruise(cruise, data_dir, output_dir = data_dir, overwrite = FALSE)
 }
 \arguments{
 \item{cruise}{prefix to add to each processed data file}
