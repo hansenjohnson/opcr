@@ -1,4 +1,5 @@
 #' opcr
+#'
 #' An Optical Plankton Counter (OPC) is a tried and true piece of oceanographic equipment
 #' designed to count and size small particles in the water. The raw data are stored in a
 #' binary file format (typically with a .D00 file extension) designed by the manufacturer,
@@ -6,6 +7,7 @@
 #' them to a nice R format, and deriving and plotting relevant metrics.
 #'
 #' @docType package
+#' @author Hansen Johnson (\email{hansen.johnson@@dal.ca})
 #' @name opcr
 NULL
 

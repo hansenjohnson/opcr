@@ -3,9 +3,14 @@
 \docType{package}
 \name{opcr}
 \alias{opcr}
-\title{opcr
+\title{opcr}
+\description{
 An Optical Plankton Counter (OPC) is a tried and true piece of oceanographic equipment
 designed to count and size small particles in the water. The raw data are stored in a
 binary file format (typically with a .D00 file extension) designed by the manufacturer,
 Focal Technologies. This package provides utilities for reading in D00 files, converting
-them to a nice R format, and deriving and plotting relevant metrics.}
+them to a nice R format, and deriving and plotting relevant metrics.
+}
+\author{
+Hansen Johnson (\email{hansen.johnson@dal.ca})
+}
