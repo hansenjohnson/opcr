@@ -417,9 +417,7 @@ opc_trim = function(df){
 #' The processing occurs in several steps:
 #' 1. read in binary OPC data in .D00 file with `read_focal_opc()`
 #' 2. convert to a nice tabular format with `convert_single_opc()`
-#' - see `opc` for data example and description
 #' 3. apply various quality control flags with `opc_flag()`
-#' - see `opc_flag()` documentation for a description of each flag
 #' 4. use a shiny app to interactively select the downcast with `opc_trim()`
 #'
 #' @param ifile path to .D00 file
@@ -542,7 +540,7 @@ get_ylims = function(p){
 #' @param d bin width
 #' @param bmin minimum bin (defaults to `0`)
 #' @param bmax maximum bin (defaults to `max(x,na.rm=T)`)
-#' @param ... additional arguments passed to cut
+#' @param ... additional arguments passed to `cut()`
 #'
 #' @return factor, indicating bin assignment
 #' @export

@@ -15,7 +15,7 @@ bin(x, d, bmin = 0, bmax = max(x, na.rm = T), ...)
 
 \item{bmax}{maximum bin (defaults to \code{max(x,na.rm=T)})}
 
-\item{...}{additional arguments passed to cut}
+\item{...}{additional arguments passed to \code{cut()}}
 }
 \value{
 factor, indicating bin assignment

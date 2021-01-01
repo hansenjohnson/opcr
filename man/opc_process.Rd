@@ -17,17 +17,7 @@ The processing occurs in several steps:
 \enumerate{
 \item read in binary OPC data in .D00 file with \code{read_focal_opc()}
 \item convert to a nice tabular format with \code{convert_single_opc()}
-}
-\itemize{
-\item see \code{opc} for data example and description
-}
-\enumerate{
 \item apply various quality control flags with \code{opc_flag()}
-}
-\itemize{
-\item see \code{opc_flag()} documentation for a description of each flag
-}
-\enumerate{
 \item use a shiny app to interactively select the downcast with \code{opc_trim()}
 }
 }
