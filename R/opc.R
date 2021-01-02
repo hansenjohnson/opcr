@@ -473,7 +473,7 @@ opc_process = function(ifile){
 #' @export
 #'
 #' @examples
-opc_process_cruise = function(cruise,data_dir,output_dir=data_dir,overwrite=FALSE){
+opc_process_cruise = function(cruise,data_dir, output_dir=data_dir, overwrite=FALSE){
 
   # create output dir
   if(!dir.exists(output_dir)){dir.create(output_dir, recursive = T)}
@@ -488,13 +488,13 @@ opc_process_cruise = function(cruise,data_dir,output_dir=data_dir,overwrite=FALS
     # define raw data file
     ifile = flist[ii]
 
-    # extract sample id
-    sample_id = as.numeric(substr(basename(ifile), 4, 6))
+    # extract cast number
+    cast = as.numeric(substr(basename(ifile), 4, 6))
 
     # interim file
-    tfile = paste0(output_dir, cruise, '_', sample_id, '.rds')
+    tfile = paste0(output_dir, cruise, '_', cast, '.rds')
 
-    message('Processing cast ', sample_id, ' from cruise ', cruise)
+    message('Processing cast ', cast, ' from cruise ', cruise)
 
     if(file.exists(tfile) & !overwrite){
 
@@ -508,7 +508,7 @@ opc_process_cruise = function(cruise,data_dir,output_dir=data_dir,overwrite=FALS
       opc = opc_process(ifile) %>%
         mutate(
           cruise = cruise,
-          sample_id = sample_id
+          cast = cast
         )
 
       # save
