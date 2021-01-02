@@ -473,13 +473,19 @@ opc_process = function(ifile){
 #' @export
 #'
 #' @examples
-opc_process_cruise = function(cruise,data_dir, output_dir=data_dir, overwrite=FALSE){
+opc_process_cruise = function(cruise, data_dir, output_dir=data_dir, overwrite=FALSE){
 
   # create output dir
   if(!dir.exists(output_dir)){dir.create(output_dir, recursive = T)}
 
   # list data files
   flist = list.files(data_dir, pattern = '^OPC(\\d{3}).D00$', full.names = TRUE)
+
+  # catch zero files
+  if(length(flist)==0){
+    message('No D00 files found in :', data_dir)
+    return(NA)
+  }
 
   # process all data files
   DF = vector('list',length(flist))
@@ -915,7 +921,7 @@ opc_plot_flags = function(df){
     scale_color_manual(
       values=c('slow'='red','reversal'='blue','depth'='black','attenuance'='purple','timer'='orange'))+
     scale_y_reverse(limits = c(NA,0))+
-    labs(x='Time (s)',y='Depth (m)', color = 'Flag',caption = txt)+
+    labs(x='Scan',y='Depth (m)', color = 'Flag',caption = txt)+
     theme_bw()+
     theme(legend.position = c(1,1),
           legend.justification = c(1,1),
