@@ -359,10 +359,14 @@ opc_trim = function(df){
              ),
       column(width = 3,
              actionButton("done", label = 'Done',width = '100%')
-             )
+             ),
+      column(width = 12, style = "text-align: center;",
+             checkboxInput("good_only", label = 'Plot only good values?', value = TRUE, width = '100%')
+      )
     ),
     fluidRow(
-      column(width = 12,plotOutput("diagnostics", height = 600)
+      column(width = 12,
+             plotOutput("diagnostics", height = 600)
       )
     )
   )
@@ -407,12 +411,18 @@ opc_trim = function(df){
 
     # plot diagnostics
     output$diagnostics <- renderPlot({
-      if(nrow(dplyr::filter(dfs(),flag==0))>50){
-        opc_plot_diagnostics(df = dfs(), good_only = TRUE)
+
+      # remove depth spikes from plot data
+      df = dplyr::filter(dfs(), flag != 'depth')
+
+      # plot
+      if(nrow(dplyr::filter(df,flag==0))>50){
+        opc_plot_diagnostics(df = df, good_only = input$good_only)
       } else {
         showNotification("Few unflagged observations detected. Plotting all data instead...", type = 'warning')
-        opc_plot_diagnostics(df = dplyr::filter(dfs(),flag!='depth'), good_only = FALSE)
+        opc_plot_diagnostics(df = df, good_only = FALSE)
       }
+
     })
 
     # return trimmed output
