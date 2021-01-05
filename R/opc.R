@@ -728,6 +728,16 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
 
 #' Calculate OPC biomass
 #'
+#' Convert Equivalent Spherical Diameter (ESD) from the OPC into
+#' wet weight (in mg) per depth bin using the formula below which was
+#' developed by Suthers et al (2006) and implemented by
+#' Fortune et al (2020).
+#'
+#' `wet_weight = 4/3 * pi * (esd/2)^3 * rho`
+#' where `rho` = 1 mg / mm
+#'
+#' Note that this is only applied to particles > 1 mm ESD
+#'
 #' @param df opc tibble
 #' @param dz depth bin width (meters)
 #' @param good_only use only good (unflagged) values

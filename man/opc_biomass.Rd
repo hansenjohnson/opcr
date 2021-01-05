@@ -17,5 +17,14 @@ opc_biomass(df, dz = 2, good_only = T)
 tibble
 }
 \description{
-Calculate OPC biomass
+Convert Equivalent Spherical Diameter (ESD) from the OPC into
+wet weight (in mg) per depth bin using the formula below which was
+developed by Suthers et al (2006) and implemented by
+Fortune et al (2020).
+}
+\details{
+\code{wet_weight = 4/3 * pi * (esd/2)^3 * rho}
+where \code{rho} = 1 mg / mm
+
+Note that this is only applied to particles > 1 mm ESD
 }
