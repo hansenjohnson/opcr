@@ -21,3 +21,6 @@ Convert Equivalent Spherical Diameter (ESD) from the OPC into
 energy (in Joules) per depth bin using the formula below which was
 developed by Davies et al (2012).
 }
+\details{
+\code{energy = 0.0134 * (esd) - 7.52}
+}

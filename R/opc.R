@@ -796,7 +796,7 @@ opc_biomass = function(df,dz=2,good_only=T){
 #' energy (in Joules) per depth bin using the formula below which was
 #' developed by Davies et al (2012).
 #'
-#'
+#' `energy = 0.0134 * (esd) - 7.52`
 #'
 #' @param df opc tibble
 #' @param dz depth bin width (meters)
