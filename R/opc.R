@@ -467,6 +467,29 @@ opc_process = function(ifile){
   return(opc)
 }
 
+#' Process multiple OPC casts in single file
+#'
+#' Occasionally multiple OPC casts are conducted repeatedly in the same
+#' data file. This function runs `opc_process()` multiple times on the same file
+#' to allow the user to select multiple casts.
+#'
+#' @param ifile path to raw data file (*.D00)
+#' @param cast_ids vector indicating the IDs used for each extracted cast
+#'
+#' @return OPC tibble
+#' @export
+#'
+#' @examples
+opc_process_multicast = function(ifile, cast_ids){
+  DF = vector('list',length=length(cast_ids))
+  for(ii in seq_along(DF)){
+    message('Select cast ', cast_ids[ii])
+    DF[[ii]] = opc_process(ifile) %>%
+      mutate(cast = cast_ids[ii])
+  }
+  bind_rows(DF)
+}
+
 #' Process multiple OPC casts
 #'
 #' Process all the OPC raw data files in `data_dir` and save processed downcasts in
