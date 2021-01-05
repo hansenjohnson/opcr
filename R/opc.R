@@ -790,6 +790,66 @@ opc_biomass = function(df,dz=2,good_only=T){
   return(out)
 }
 
+#' Calculate OPC energy
+#'
+#' Convert Equivalent Spherical Diameter (ESD) from the OPC into
+#' energy (in Joules) per depth bin using the formula below which was
+#' developed by Davies et al (2012).
+#'
+#'
+#'
+#' @param df opc tibble
+#' @param dz depth bin width (meters)
+#' @param good_only use only good (unflagged) values
+#'
+#' @return tibble
+#' @export
+#'
+#' @examples
+opc_energy = function(df,dz=2,good_only=T){
+
+  # reject flagged values
+  if(good_only){df = dplyr::filter(df,flag==0)}
+
+  # bin by depth
+  df$zbin = bin(df$depth,d=dz)
+
+  # volume by depth bin
+  vol = df %>%
+    group_by(zbin, .drop = FALSE) %>%
+    dplyr::summarize(
+      v = sum(volume_filtered,na.rm = T),
+      .groups = 'drop'
+    )
+
+  # energy by depth bin
+  erg = df %>%
+    unnest_longer(esd) %>%
+    dplyr::filter(esd >= 0.8 & esd <= 1.6) %>%
+    group_by(zbin, .drop = FALSE) %>%
+    dplyr::summarize(
+      n = n(),
+      e = sum(0.0134 * (esd * 1e3) - 7.52, na.rm = T),
+      .groups = 'drop'
+    )
+
+  # combine and format
+  out = full_join(erg,vol,by='zbin') %>%
+    transmute(
+      depth = relabel(zbin),
+      n = n,
+      energy = e,
+      volume = v,
+      concentration = e/v
+    )
+
+  # catch infinite
+  out$concentration[is.infinite(out$concentration)]=NA
+
+  return(out)
+}
+
+
 #' Calculate OPC size-frequency histogram
 #'
 #' @param df opc tibble
@@ -1020,7 +1080,32 @@ opc_plot_biomass = function(df,dz=4,good_only=T){
     geom_rect(data=d,aes(xmin=0,xmax=concentration,ymin=depth,ymax=depth+dz),
               fill = 'grey', color = 'black', size = 0.2)+
     scale_y_reverse()+
-    labs(y = 'Depth (m)', x = 'Biomass (ug/m3)')+
+    labs(y = 'Depth (m)', x = 'Biomass (mg/m3)')+
+    theme_bw()
+}
+
+#' Compute and plot OPC energy vs depth
+#'
+#' @param df opc tibble
+#' @param dz depth bin width (m)
+#' @param good_only use only good (unflagged) values
+#'
+#' @return ggplot
+#' @export
+#'
+#' @examples
+opc_plot_energy = function(df,dz=4,good_only=T){
+
+  # count by depth bin
+  d = opc_energy(df = df, dz = dz, good_only = good_only) %>%
+    dplyr::filter(!is.na(concentration))
+
+  # plot
+  ggplot()+
+    geom_rect(data=d,aes(xmin=0,xmax=concentration,ymin=depth,ymax=depth+dz),
+              fill = 'grey', color = 'black', size = 0.2)+
+    scale_y_reverse()+
+    labs(y = 'Depth (m)', x = 'Energy (J/m3)')+
     theme_bw()
 }
 
