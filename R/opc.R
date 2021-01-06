@@ -637,6 +637,25 @@ relabel = function(x){
   as.numeric(tmp)
 }
 
+#' Check opc data
+#'
+#' Simple subroutine to catch common plotting / processing errors
+#'
+#' @param df
+#'
+#' @return df
+#' @export
+#'
+#' @examples
+opc_check = function(df){
+  if(nrow(df) == 0){
+    stop('No data detected!\nTry plotting both flagged and unflagged values with:\n`good_only = FALSE`')
+  }
+  if(diff(range(df$depth)) > 1e3){
+    stop('Extreme depth range detected!\nTry removing flagged values with:\nfilter(df, flag != \'depth\')')
+  }
+}
+
 # calculate ---------------------------------------------------------------
 
 #' Calculate OPC speed
@@ -661,6 +680,9 @@ opc_speed = function(df, method = 'instantaneous', exclude_bad_depths = TRUE){
   if(exclude_bad_depths){
     df = dplyr::filter(df, flag != 'depth')
   }
+
+  # check data
+  opc_check(df)
 
   t = as.numeric(df$time)
   z = as.numeric(df$depth)
@@ -712,6 +734,9 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
 
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
+
+  # check data
+  opc_check(df)
 
   # bin by depth
   df$zbin = bin(df$depth,d=dz)
@@ -774,6 +799,9 @@ opc_biomass = function(df,dz=2,good_only=T){
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
 
+  # check data
+  opc_check(df)
+
   # parameters
   rho = 1
 
@@ -834,6 +862,9 @@ opc_energy = function(df,dz=2,good_only=T){
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
 
+  # check data
+  opc_check(df)
+
   # bin by depth
   df$zbin = bin(df$depth,d=dz)
 
@@ -890,6 +921,9 @@ opc_histogram = function(df,ds=0.05,min_size=1,max_size=4,good_only=T){
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
 
+  # check data
+  opc_check(df)
+
   # get sampled volume
   volume = sum(df$volume_filtered)
 
@@ -937,6 +971,9 @@ opc_image = function(df, ds=0.05, dz=2, min_size = 1, max_size = 4, good_only = 
 
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
+
+  # check data
+  opc_check(df)
 
   # assign depth bins
   df$zbin = bin(df$depth,d=dz)
