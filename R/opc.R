@@ -285,6 +285,7 @@ convert_single_opc = function(ifile){
 #' 3) slow descent rates (<0.3 m/s) - `slow`
 #' 4) directional reversals - `reversal`
 #' 5) extreme light attenuance - `attenuance`
+#' 6) extreme volume filtered - `volume`
 #'
 #' @param df OPC data frame
 #'
@@ -322,7 +323,10 @@ opc_flag = function(df){
 
   # apply median filter to flag depth spikes
   mf = stats::runmed(df$depth, k = 11)
-  df$flag[which(abs(mf-df$depth)>3)] = 'depth'
+  df$flag[which(abs(mf-df$depth) > 3)] = 'depth'
+
+  # flag excessive volume filtered values
+  df$flag[which(df$volume_filtered > 10)] = 'volume'
 
   return(df)
 }

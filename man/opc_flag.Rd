@@ -24,5 +24,6 @@ associated flag values are as follows:
 \item slow descent rates (<0.3 m/s) - \code{slow}
 \item directional reversals - \code{reversal}
 \item extreme light attenuance - \code{attenuance}
+\item extreme volume filtered - \code{volume}
 }
 }
