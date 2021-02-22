@@ -4,7 +4,7 @@
 \alias{opc_biomass}
 \title{Calculate OPC biomass}
 \usage{
-opc_biomass(df, dz = 2, good_only = T)
+opc_biomass(df, dz = 2, good_only = TRUE, reject_volume = TRUE)
 }
 \arguments{
 \item{df}{opc tibble}
@@ -12,6 +12,8 @@ opc_biomass(df, dz = 2, good_only = T)
 \item{dz}{depth bin width (meters)}
 
 \item{good_only}{use only good (unflagged) values}
+
+\item{reject_volume}{set concentration to \code{NA} for depth bins with <50\% volume sampled}
 }
 \value{
 tibble

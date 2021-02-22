@@ -4,7 +4,14 @@
 \alias{opc_abundance}
 \title{Calculate OPC abundance profile}
 \usage{
-opc_abundance(df, dz = 2, min_size = 1, max_size = 4, good_only = TRUE)
+opc_abundance(
+  df,
+  dz = 2,
+  min_size = 1,
+  max_size = 4,
+  good_only = TRUE,
+  reject_volume = TRUE
+)
 }
 \arguments{
 \item{df}{opc tibble}
@@ -16,6 +23,8 @@ opc_abundance(df, dz = 2, min_size = 1, max_size = 4, good_only = TRUE)
 \item{max_size}{maximum particle ESD (mm)}
 
 \item{good_only}{use only good (unflagged) values}
+
+\item{reject_volume}{set concentration to \code{NA} for depth bins with <50\% volume sampled}
 }
 \value{
 tibble

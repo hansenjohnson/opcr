@@ -7,10 +7,10 @@
 opc_check(df)
 }
 \arguments{
-\item{df}{}
+\item{df}{OPC tibble}
 }
 \value{
-df
+df (OPC tibble)
 }
 \description{
 Simple subroutine to catch common plotting / processing errors

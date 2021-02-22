@@ -645,9 +645,9 @@ relabel = function(x){
 #'
 #' Simple subroutine to catch common plotting / processing errors
 #'
-#' @param df
+#' @param df OPC tibble
 #'
-#' @return df
+#' @return df (OPC tibble)
 #' @export
 #'
 #' @examples
@@ -749,6 +749,7 @@ opc_speed = function(df, method = 'instantaneous', exclude_bad_depths = TRUE){
 #' @param min_size minimum particle ESD (mm)
 #' @param max_size maximum particle ESD (mm)
 #' @param good_only use only good (unflagged) values
+#' @param reject_volume set concentration to `NA` for depth bins with <50% volume sampled
 #'
 #' @return tibble
 #' @export
@@ -821,6 +822,7 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
 #' @param df opc tibble
 #' @param dz depth bin width (meters)
 #' @param good_only use only good (unflagged) values
+#' @param reject_volume set concentration to `NA` for depth bins with <50% volume sampled
 #'
 #' @return tibble
 #' @export
@@ -893,6 +895,7 @@ opc_biomass = function(df,
 #' @param df opc tibble
 #' @param dz depth bin width (meters)
 #' @param good_only use only good (unflagged) values
+#' @param reject_volume set concentration to `NA` for depth bins with <50% volume sampled
 #'
 #' @return tibble
 #' @export
@@ -1012,6 +1015,7 @@ opc_histogram = function(df,ds=0.05,min_size=1,max_size=4,good_only=T){
 #' @param min_size minimum particle ESD (mm)
 #' @param max_size maximum particle ESD (mm)
 #' @param good_only use only good (unflagged) values
+#' @param reject_volume set concentration to `NA` for depth bins with <50% volume sampled
 #'
 #' @return tibble
 #' @export

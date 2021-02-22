@@ -4,7 +4,15 @@
 \alias{opc_image}
 \title{Calculate OPC abundance in size and depth bin matrix}
 \usage{
-opc_image(df, ds = 0.05, dz = 2, min_size = 1, max_size = 4, good_only = T)
+opc_image(
+  df,
+  ds = 0.05,
+  dz = 2,
+  min_size = 1,
+  max_size = 4,
+  good_only = TRUE,
+  reject_volume = TRUE
+)
 }
 \arguments{
 \item{df}{opc tibble}
@@ -18,6 +26,8 @@ opc_image(df, ds = 0.05, dz = 2, min_size = 1, max_size = 4, good_only = T)
 \item{max_size}{maximum particle ESD (mm)}
 
 \item{good_only}{use only good (unflagged) values}
+
+\item{reject_volume}{set concentration to \code{NA} for depth bins with <50\% volume sampled}
 }
 \value{
 tibble

@@ -3,6 +3,7 @@
 export(bin)
 export(convert_digital_size)
 export(convert_single_opc)
+export(drop_volume)
 export(get_xlims)
 export(get_ylims)
 export(opc_abundance)
