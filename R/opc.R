@@ -660,6 +660,29 @@ opc_check = function(df){
   }
 }
 
+#' Drop volume
+#'
+#' Identify depth bins where less than 50% of the bin volume was sampled, and set corresponding
+#' particle concentration to `NA`. This avoids large spikes in concentration caused by poorly sampled bins.
+#'
+#' @param df OPC tibble
+#' @param dz depth bin width
+#' @param area area (m2) of OPC tunnel (defaults to `0.02*0.25`)
+#'
+#' @return df (OPC tibble)
+#' @export
+#'
+#' @examples
+drop_volume = function(df, dz, area = 0.02*0.25){
+  # define minimum volume (proportion of maximum possible)
+  vmin = 0.5*area*dz
+
+  # reject bins with insufficient volume
+  df$concentration[df$volume < vmin] = NA
+
+  return(df)
+}
+
 # calculate ---------------------------------------------------------------
 
 #' Calculate OPC speed
@@ -734,7 +757,7 @@ opc_speed = function(df, method = 'instantaneous', exclude_bad_depths = TRUE){
 #'
 #' data(opc)
 #'
-opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRUE){
+opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRUE, reject_volume = TRUE){
 
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
@@ -775,6 +798,11 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
   # catch infinite
   out$concentration[is.infinite(out$concentration)]=NA
 
+  # reject volume
+  if(reject_volume){
+    out = drop_volume(df = out, dz = dz)
+  }
+
   return(out)
 }
 
@@ -798,7 +826,11 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
 #' @export
 #'
 #' @examples
-opc_biomass = function(df,dz=2,good_only=T){
+opc_biomass = function(df,
+                       dz = 2,
+                       good_only = TRUE,
+                       reject_volume = TRUE) {
+
 
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
@@ -842,6 +874,11 @@ opc_biomass = function(df,dz=2,good_only=T){
   # catch infinite
   out$concentration[is.infinite(out$concentration)]=NA
 
+  # reject volume
+  if(reject_volume){
+    out = drop_volume(df = out, dz = dz)
+  }
+
   return(out)
 }
 
@@ -861,7 +898,11 @@ opc_biomass = function(df,dz=2,good_only=T){
 #' @export
 #'
 #' @examples
-opc_energy = function(df,dz=2,good_only=T){
+opc_energy = function(df,
+                      dz = 2,
+                      good_only = TRUE,
+                      reject_volume = TRUE) {
+
 
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
@@ -903,6 +944,11 @@ opc_energy = function(df,dz=2,good_only=T){
 
   # catch infinite
   out$concentration[is.infinite(out$concentration)]=NA
+
+  # reject volume
+  if(reject_volume){
+    out = drop_volume(df = out, dz = dz)
+  }
 
   return(out)
 }
@@ -971,7 +1017,13 @@ opc_histogram = function(df,ds=0.05,min_size=1,max_size=4,good_only=T){
 #' @export
 #'
 #' @examples
-opc_image = function(df, ds=0.05, dz=2, min_size = 1, max_size = 4, good_only = T){
+opc_image = function(df,
+                     ds = 0.05,
+                     dz = 2,
+                     min_size = 1,
+                     max_size = 4,
+                     good_only = TRUE,
+                     reject_volume = TRUE) {
 
   # reject flagged values
   if(good_only){df = dplyr::filter(df,flag==0)}
@@ -1018,6 +1070,11 @@ opc_image = function(df, ds=0.05, dz=2, min_size = 1, max_size = 4, good_only = 
 
   # catch infinite
   out$concentration[is.infinite(out$concentration)]=NA
+
+  # reject volume
+  if(reject_volume){
+    out = drop_volume(df = out, dz = dz)
+  }
 
   return(out)
 }
