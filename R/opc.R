@@ -459,7 +459,7 @@ opc_trim_bechtest = function(df){
     fluidRow(
       column(width = 12,
              helpText('Click and drag to select a region. Double click inside a selected region to zoom in, or outside to reset the plot limits.', align = "center"),
-             plotOutput("full", height = 400, dblclick = "plot_dblclick",
+             plotOutput("full", height = 200, dblclick = "plot_dblclick",
                         brush = brushOpts(id = "plot_brush", direction = "x",resetOnNew = TRUE)
              )
       )
@@ -477,7 +477,7 @@ opc_trim_bechtest = function(df){
     ),
     fluidRow(
       column(width = 12,
-             plotOutput("diagnostics", height = 600)
+             plotOutput("diagnostics", height = 300)
       )
     )
   )
