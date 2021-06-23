@@ -443,6 +443,99 @@ opc_trim = function(df){
   runApp(shinyApp(ui, server), quiet = TRUE)
 }
 
+#' Benchtest OPC cast
+#'
+#' Shiny app to display timeseries and histogram of OPC cast
+#'
+#' @param df OPC tibble
+#'
+#' @return OPC tibble trimmed to include selected time
+#' @export
+#'
+#' @examples
+opc_trim_bechtest = function(df){
+  # shiny app to select downcast
+  ui = fluidPage(
+    fluidRow(
+      column(width = 12,
+             helpText('Click and drag to select a region. Double click inside a selected region to zoom in, or outside to reset the plot limits.', align = "center"),
+             plotOutput("full", height = 400, dblclick = "plot_dblclick",
+                        brush = brushOpts(id = "plot_brush", direction = "x",resetOnNew = TRUE)
+             )
+      )
+    ),
+    fluidRow(
+      column(width = 12,
+             helpText('Click `Plot` to plot OPC data in the selected region. Click `Done` to trim and save the output', align = "center")
+      ),
+      column(width = 3, offset = 3,
+             actionButton("plot", label = 'Plot',width = '100%')
+      ),
+      column(width = 3,
+             actionButton("done", label = 'Done',width = '100%')
+      )
+    ),
+    fluidRow(
+      column(width = 12,
+             plotOutput("diagnostics", height = 600)
+      )
+    )
+  )
+
+  server = function(input, output) {
+
+    # initiate ranges
+    ranges = reactiveValues(x = NULL)
+
+    # When a double-click happens, check if there's a brush on the plot.
+    # If so, zoom to the brush bounds; if not, reset the zoom.
+    observeEvent(input$plot_dblclick, {
+      brush = input$plot_brush
+      if (!is.null(brush)) {
+        ranges$x = c(brush$xmin, brush$xmax)
+      } else {
+        ranges$x = NULL
+      }
+    })
+
+    # plot full time-depth series
+    output$full <- renderPlot({
+      # generate timeseries
+      opc_plot_time_count(df, dt = 1, min_size = 0, max_size = 6, good_only = F)+
+        coord_cartesian(xlim = ranges$x,expand = FALSE)
+    })
+
+    # subset
+    dfs = eventReactive(input$plot,{
+      brush = input$plot_brush
+      if (!is.null(brush)) {
+        df %>% dplyr::filter(secs >= brush$xmin & secs <= brush$xmax)
+      }else{
+        showNotification("Plotting all data. Select a region to trim the data!", type = 'warning')
+        df
+      }
+    })
+
+    # plot diagnostics
+    output$diagnostics <- renderPlot({
+      # generate histogram
+      opc_plot_histogram(dfs(), ds = 0.05, min_size = 0, max_size = 6, good_only = F)
+    })
+
+    # return trimmed output
+    observeEvent(input$done, {
+      if(input$plot==0){
+        showNotification("Plot the data to check the trimming!", type = 'warning')
+      } else {
+        stopApp(dfs())
+      }
+    })
+
+  }
+
+  runApp(shinyApp(ui, server), quiet = TRUE)
+}
+
 #' Process a single OPC cast
 #'
 #' The processing occurs in several steps:
@@ -566,6 +659,30 @@ opc_process_cruise = function(cruise, data_dir, output_dir=data_dir, overwrite=F
   df = bind_rows(DF)
 
   return(df)
+}
+
+#' Benchtest a single OPC cast
+#'
+#' The processing occurs in several steps:
+#' 1. read in binary OPC data in .D00 file with `read_focal_opc()`
+#' 2. convert to a nice tabular format with `convert_single_opc()`
+#' 3. use a shiny app to interactively check the results with `opc_trim_benchtest()`
+#'
+#' @param ifile path to .D00 file
+#'
+#' @return opc tibble
+#' @export
+#'
+#' @examples
+opc_process_benchtest = function(ifile){
+
+  # convert data file
+  opc = convert_single_opc(ifile = ifile)
+
+  # select downcast
+  opc = opc_trim_bechtest(opc)
+
+  return(opc)
 }
 
 # utils -------------------------------------------------------------------
@@ -1083,6 +1200,50 @@ opc_image = function(df,
   return(out)
 }
 
+#' Count OPC particles in given size range over time
+#'
+#' @param df opc tibble
+#' @param dt timestep (s)
+#' @param min_size minimum particle ESD (mm)
+#' @param max_size maximum particle ESD (mm)
+#' @param good_only use only good (unflagged) values
+#'
+#' @return tibble
+#' @export
+#'
+#' @examples
+opc_time_count = function(df,
+                          dt = 1,
+                          min_size = 1,
+                          max_size = 4,
+                          good_only = TRUE) {
+  # reject flagged values
+  if (good_only) {
+    df = dplyr::filter(df, flag == 0)
+  }
+
+  # check data
+  opc_check(df)
+
+  # bin by time
+  df$tbin = bin(df$secs, d = dt)
+
+  # bugs by time bin
+  cnt = df %>%
+    unnest_longer(esd) %>%
+    dplyr::filter(esd >= min_size & esd <= max_size) %>%
+    group_by(tbin, .drop = FALSE) %>%
+    dplyr::summarize(c = n(),
+                     .groups = 'drop')
+
+  # combine and format
+  out = cnt %>%
+    transmute(time = relabel(tbin),
+              count = c)
+
+  return(out)
+}
+
 # plot --------------------------------------------------------------------
 
 #' Plot OPC time versus depth series
@@ -1394,4 +1555,33 @@ opc_plot_diagnostics = function(df, dz = 2, ds = 0.05, min_size = 0, max_size = 
     p_flag_f, p_atten_f, p_img_f, p_abund_f,
     nrow=2,ncol=4,
     widths = c(2,1,2,1), heights = c(1, 2))
+}
+
+#' Plot timeseries of OPC particle counts in given size range
+#'
+#'
+#' @param df opc tibble
+#' @param dt timestep (s)
+#' @param min_size minimum particle ESD (mm)
+#' @param max_size maximum particle ESD (mm)
+#' @param good_only use only good (unflagged) values
+#'
+#' @return ggplot
+#' @export
+#'
+#' @examples
+opc_plot_time_count = function(df, dt = 1, min_size = 1, max_size = 4, good_only = TRUE){
+
+  # count by depth bin
+  d = opc_time_count(df = df, dt = dt, min_size = min_size, max_size = max_size, good_only = good_only)
+
+  # construct y label
+  ylab = paste0('Count\n(',min_size,'-',max_size,' mm ESD)')
+
+  # plot
+  ggplot()+
+    geom_rect(data=d,aes(ymin=0,ymax=count,xmin=time,xmax=time+dt),
+              fill = 'grey', color = 'black', size = 0.2)+
+    labs(x = 'Time (s)', y = ylab)+
+    theme_bw()
 }
