@@ -458,68 +458,70 @@ opc_trim_bechtest = function(df){
   ui = fluidPage(
     fluidRow(
       column(width = 12,
-             helpText('Click and drag to select a region. Double click inside a selected region to zoom in, or outside to reset the plot limits.', align = "center"),
-             plotOutput("full", height = 200, dblclick = "plot_dblclick",
-                        brush = brushOpts(id = "plot_brush", direction = "x",resetOnNew = TRUE)
+             helpText('Click and drag to select a region to plot in detail', align = "center"),
+             plotOutput("full", height = 200, brush = brushOpts(id = "plot_brush", direction = "x",resetOnNew = TRUE)
              )
       )
     ),
     fluidRow(
       column(width = 12,
-             helpText('Click `Plot` to plot OPC data in the selected region. Click `Done` to trim and save the output', align = "center")
+             helpText('Click `Done` to trim and save the output', align = "center")
       ),
-      column(width = 3, offset = 3,
-             actionButton("plot", label = 'Plot',width = '100%')
-      ),
-      column(width = 3,
+      column(width = 4,offset = 4,
              actionButton("done", label = 'Done',width = '100%')
       )
     ),
     fluidRow(
       column(width = 12,
-             plotOutput("diagnostics", height = 300)
+             plotOutput("diagnostics", height = 600)
       )
     )
   )
 
   server = function(input, output) {
 
-    # initiate ranges
-    ranges = reactiveValues(x = NULL)
-
-    # When a double-click happens, check if there's a brush on the plot.
-    # If so, zoom to the brush bounds; if not, reset the zoom.
-    observeEvent(input$plot_dblclick, {
-      brush = input$plot_brush
-      if (!is.null(brush)) {
-        ranges$x = c(brush$xmin, brush$xmax)
-      } else {
-        ranges$x = NULL
-      }
-    })
-
     # plot full time-depth series
     output$full <- renderPlot({
+
       # generate timeseries
-      opc_plot_time_count(df, dt = 1, min_size = 0, max_size = 6, good_only = F)+
-        coord_cartesian(xlim = ranges$x,expand = FALSE)
+      opc_plot_time_count(df, dt = 0.5, min_size = 0, max_size = 6, good_only = F)
+
     })
 
     # subset
-    dfs = eventReactive(input$plot,{
+    dfs = reactive({
       brush = input$plot_brush
       if (!is.null(brush)) {
         df %>% dplyr::filter(secs >= brush$xmin & secs <= brush$xmax)
       }else{
-        showNotification("Plotting all data. Select a region to trim the data!", type = 'warning')
         df
       }
     })
 
     # plot diagnostics
     output$diagnostics <- renderPlot({
+      brush = input$plot_brush
+      xlims = c(brush$xmin, brush$xmax)
+
+      # generate count timeseries
+      p_count = opc_plot_time_count(df, dt = 0.5, min_size = 0, max_size = 6, good_only = F)+
+        coord_cartesian(xlim = xlims, expand = FALSE)+
+        theme(axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.title.x = element_blank())
+
+      # generate attenuance timeseries
+      p_attenuance = ggplot(df,aes(x = secs, y = atten))+
+        geom_path()+
+        geom_point(shape = 1)+
+        labs(x = 'Time (s)', y = 'Attenuance')+
+        coord_cartesian(xlim = xlims, expand = FALSE) +
+        theme_bw()
+
       # generate histogram
-      opc_plot_histogram(dfs(), ds = 0.05, min_size = 0, max_size = 6, good_only = F)
+      p_histogram = opc_plot_histogram(dfs(), ds = 0.05, min_size = 0, max_size = 6, good_only = F)
+
+      # combine
+      wrap_plots(p_count, p_attenuance, p_histogram, nrow = 3, heights = c(1,1,2))
+
     })
 
     # return trimmed output
@@ -679,6 +681,9 @@ opc_process_benchtest = function(ifile){
   # convert data file
   opc = convert_single_opc(ifile = ifile)
 
+  # flag bad depths before downcast selection
+  opc = opc_flag(opc)
+
   # select downcast
   opc = opc_trim_bechtest(opc)
 
@@ -770,10 +775,10 @@ relabel = function(x){
 #' @examples
 opc_check = function(df){
   if(nrow(df) == 0){
-    stop('No data detected!\nTry plotting both flagged and unflagged values with:\n`good_only = FALSE`')
+    warning('No data detected!\nTry plotting both flagged and unflagged values with:\n`good_only = FALSE`')
   }
   if(diff(range(df$depth)) > 1e3){
-    stop('Extreme depth range detected!\nTry removing flagged values with:\nfilter(df, flag != \'depth\')')
+    warning('Extreme depth range detected!\nTry removing flagged values with:\nfilter(df, flag != \'depth\')')
   }
 }
 
