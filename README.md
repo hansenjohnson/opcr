@@ -1,6 +1,8 @@
 # opcr
 Process and plot data from an Optical Plankton Counter (OPC)
 
+[![DOI](https://zenodo.org/badge/326001520.svg)](https://zenodo.org/badge/latestdoi/326001520)
+
 ## Overview
 
 An Optical Plankton Counter (OPC) is an oceanographic instrument designed to count and size small particles in the water. The raw data are stored in a binary file format (typically with a .D00 file extension) designed by the manufacturer, Focal Technologies. This package provides utilities for reading in D00 files, converting them to a nice R format, and computing and plotting relevant metrics.
