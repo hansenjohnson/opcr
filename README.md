@@ -19,3 +19,9 @@ library(opcr)
 # check out the vignette for simple examples
 vignette('opcr')
 ```
+
+## Citation
+
+Please cite as follows (update year and version as needed):
+
+> Johnson, HD (2021). opcr: process and plot data from an optical plankton counter, v1.0.0. Zenodo. DOI: 10.5281/zenodo.5760977
