@@ -943,6 +943,8 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
 #'
 #' @param df opc tibble
 #' @param dz depth bin width (meters)
+#' @param min_size minimum particle ESD (mm; default = 1)
+#' @param max_size maximum particle ESD (mm; default = 6)
 #' @param good_only use only good (unflagged) values
 #' @param reject_volume set concentration to `NA` for depth bins with <50% volume sampled
 #'
@@ -952,6 +954,8 @@ opc_abundance = function(df, dz = 2, min_size = 1, max_size = 4, good_only = TRU
 #' @examples
 opc_biomass = function(df,
                        dz = 2,
+                       min_size = 1,
+                       max_size = 6,
                        good_only = TRUE,
                        reject_volume = TRUE) {
 
@@ -979,7 +983,7 @@ opc_biomass = function(df,
   # biomass by depth bin
   bio = df %>%
     unnest_longer(esd) %>%
-    dplyr::filter(esd >= 1) %>%
+    dplyr::filter(esd >= min_size & esd <= max_size) %>%
     group_by(zbin, .drop = FALSE) %>%
     dplyr::summarize(
       m = sum(4/3 * pi * (esd/2)^3 * rho, na.rm = T),
