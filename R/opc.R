@@ -453,7 +453,7 @@ opc_trim = function(df){
 #' @export
 #'
 #' @examples
-opc_trim_bechtest = function(df){
+opc_trim_benchtest = function(df){
   # shiny app to select downcast
   ui = fluidPage(
     fluidRow(
