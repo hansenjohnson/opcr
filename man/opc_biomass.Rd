@@ -4,12 +4,23 @@
 \alias{opc_biomass}
 \title{Calculate OPC biomass}
 \usage{
-opc_biomass(df, dz = 2, good_only = TRUE, reject_volume = TRUE)
+opc_biomass(
+  df,
+  dz = 2,
+  min_size = 1,
+  max_size = 6,
+  good_only = TRUE,
+  reject_volume = TRUE
+)
 }
 \arguments{
 \item{df}{opc tibble}
 
 \item{dz}{depth bin width (meters)}
+
+\item{min_size}{minimum particle ESD (mm; default = 1)}
+
+\item{max_size}{maximum particle ESD (mm; default = 6)}
 
 \item{good_only}{use only good (unflagged) values}
 
